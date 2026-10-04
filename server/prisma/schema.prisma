@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Entry {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  content     String // the command / code / solution
+  language    String   @default("text")
+  sourceUrl   String?
+  isFavorite  Boolean  @default(false)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  tags        Tag[] // implicit many-to-many
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([isFavorite])
+}
+
+model Category {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  slug    String  @unique
+  icon    String // emoji, e.g. "🐧"
+  entries Entry[]
+}
+
+model Tag {
+  id      String  @id @default(cuid())
+  name    String  @unique // stored lowercase, trimmed
+  entries Entry[]
+}
