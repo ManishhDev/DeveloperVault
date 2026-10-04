@@ -1,0 +1,18 @@
+# Render blueprint for the DevVault API (Dashboard → New → Blueprint → pick this repo).
+# The database lives on Neon; paste its connection string when Render asks for DATABASE_URL.
+services:
+  - type: web
+    name: devvault-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build -w server
+    # Migrations and seed are idempotent: they create the 12 categories and only add samples to an empty vault.
+    startCommand: npm run db:setup -w server && npm start -w server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATABASE_URL
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false

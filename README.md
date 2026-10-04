@@ -99,8 +99,16 @@ client/   React app: api/ (fetch + query hooks), components/, pages/, hooks/, li
 
 ## Deploying
 
-- **Database**: any Postgres (e.g. Neon). Set `DATABASE_URL`, then run `npm run db:setup -w server`.
-- **API**: `npm run build -w server`, then `npm start -w server`. Set `DATABASE_URL`, `PORT` and `CLIENT_ORIGIN` (the client's URL, for CORS).
-- **Client**: `npm run build -w client` with `VITE_API_URL` set to the API's origin, then serve `client/dist` as a SPA (rewrite all routes to `index.html`).
+The repo includes configs for the stack in the plan: **Neon** (Postgres), **Render** (API, `render.yaml`) and **Vercel** (client, `vercel.json`). All three have free tiers.
 
-There's no auth yet. Run a public demo read-only, or reset it regularly.
+1. **Database (Neon).** Create a project and copy the connection string. Use the **direct** one, not the `-pooler` host, because Prisma migrations need a direct connection. Keep `?sslmode=require` at the end.
+2. **API (Render).** Go to Dashboard → New → **Blueprint**, then pick this repo. Render reads `render.yaml` and asks for:
+   - `DATABASE_URL`: the Neon string from step 1
+   - `CLIENT_ORIGIN`: your Vercel URL from step 3 (e.g. `https://devvault.vercel.app`). Put a placeholder for now and update it after step 3.
+
+   Every start runs migrations and the seed. Both are idempotent: they create the 12 categories and add sample entries only to an empty vault. Check `https://<your-api>.onrender.com/api/health`, which should return `{"ok":true}`. Free instances sleep when idle, so the first request after a while takes about 30–60 s.
+
+3. **Client (Vercel).** Go to Add New → Project, then import this repo. Keep the **root directory as the repo root** (`vercel.json` handles the monorepo build and SPA routing). Add the env var `VITE_API_URL` = `https://<your-api>.onrender.com` (no trailing `/api`), then deploy.
+4. Back in Render, set `CLIENT_ORIGIN` to the real Vercel URL. Comma-separate several origins if you also use preview URLs.
+
+There's no auth yet, so anyone with the URL can edit the demo. Keep the link private, or reset the data regularly, until single-user auth from the "Later" list lands.

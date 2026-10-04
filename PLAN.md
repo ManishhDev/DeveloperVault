@@ -282,7 +282,7 @@ Each milestone ends with something working.
 - [x] Accessibility pass
 
 **M5 — Ship (½ day)**
-- [ ] Deploy: DB on Neon, API on Render/Railway, client on Vercel/Netlify
+- [ ] Deploy: DB on Neon, API on Render/Railway, client on Vercel/Netlify (configs ready: render.yaml, vercel.json; needs accounts)
 - [x] README: screenshot, features, stack, local setup, API table
 - [ ] Seed the live demo with good-looking sample entries
 
